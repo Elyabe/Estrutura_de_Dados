@@ -50,6 +50,9 @@ int main()
 	// scanf("%d", &value );
 	// scanf("%d", &d );
 	// printf("%d\n", digit( value, 2, d) );
+
+	free( myVector -> data );
+	free( myVector );
 	return 1;
 }
 
