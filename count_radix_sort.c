@@ -1,174 +1,273 @@
 /* 
-UNIVERSIDADE FEDERAL DO ESPÍRITO SANTO - UFES
-CENTRO UNIVERSTÁRIO NORTE DO ESPÍRITO SANTO - CEUNES
+CENTRO UNIVERSTÁRIO NORTE DO ESPÍRITO SANTO - CEUNES/ UFES
 ATIVIDADE COMPLEMENTAR DE ESTRUTURA DE DADOS I
 AUTOR: ELYABE ALVES SANTOS
 CURSO: CIÊNCIA DA COMPUTAÇÃO
 MATRÍCULA: 2014203834
 TURMA 1
 
-OBJETIVO: Implementação de algoritmos de ordenação de complexidade linear
+OBJETIVO: Arvore Binária de Busca - ABB
 
+CRIADO EM: 
 PROFESSOR: Luciana Lee
-*/
+--------------------------------------------------------------------------------*/
 
 #include <stdio.h>
-#include <stdlib.h> 
-#include <string.h>
+#include <stdlib.h>
 #include <math.h>
 
-#define alloc( size ) (int*)calloc( size, sizeof(int))
-
-typedef struct vector
+typedef struct no
 {
-	int *data,
-		size;
-} Vector;
+	int chave,
+	   altura;
+	struct no *esq, *dir;
+} No;
 
-void countingSortAdapted ( Vector** A, int k, int col, int qtdDigit);
-Vector* create_vector( int size );
-Vector* countingSort ( Vector* A, int k );
-int digit( int value, int qtdDigit, int digit );
-void show_vector( Vector* myVector );
-void radixSort ( Vector** A, int qtdDigit );
-void createSequence( Vector** myVector );
+No* remover( No* raiz, int chave );
+No *buscar( No *raiz, int chave );
+No *alocar_no ( int chave );
+No *inserir ( No *raiz, int chave );
+void atualizar_altura ( No** raiz );
+void altura_v2( No** pt );
+void altura_v3 ( No **raiz );
+int altura ( No* raiz );
+void gerarABB ( No** myTree, int quantidade );
+void imprimir ( No *raiz , int nivel );
+void imprimirNo ( No *raiz );
 
-// Função principal
+
 int main()
 {
-	Vector *myVector = create_vector(14);
-	int value, d;
-	// Popula o vetor 
-	createSequence( &myVector );
-	// Exibe o vetor 
-	show_vector( myVector );
+	No *T = NULL;
+	int qtd_nos;
+	scanf("%d", &qtd_nos );
 	
-
-	radixSort ( &myVector, 3 );
-	
-	show_vector( myVector );
-	// scanf("%d", &value );
-	// scanf("%d", &d );
-	// printf("%d\n", digit( value, 2, d) );
-
-	free( myVector -> data );
-	free( myVector );
-	return 1;
+	gerarABB( &T, qtd_nos );
+	imprimir( T, 0 );
+	return 0;
 }
 
-
-// Aloca e retorna vetor de inteiros
-// size : Quantidade de elementos 
-Vector* create_vector( int size )
+// Aloca, seta os valores padroes e retorna ponteiro num nó
+// chave : valor da chave a ser criada
+No *alocar_no( int chave )
 {
-	Vector *new = ( Vector*)calloc( sizeof( Vector), 1 );
-	if ( new )
+	No *novo;
+	if ( novo = ( No* )calloc( 1, sizeof(No) ) )
 	{
-		new -> data = alloc( size + 1 );
-		new -> size = size;
+		novo -> esq = novo -> dir = NULL;
+		novo -> chave = chave;
+		novo -> altura = 1;
 	}
-	return new;
+
+	return novo;
 }
 
-// Ordena os elmentos de um vetor lexicograficamente
-// A : Vetor a ser ordenado
-// qtdDigit : Quantidade de dígitos dos números
-// k maior elemento
-Vector* countingSort ( Vector* A, int k )
+// Insere um novo nó numa ávore de busca binária (ABB)
+// raiz : Ponteiro para raíz da árvore
+// chave : Novo valor a ser inserido
+No *inserir( No *raiz, int chave )
 {
-	if ( A )
+	// Se a árvore é vazia, então aloque 
+	if ( !raiz )
+		{  return alocar_no( chave ); }
+	else
 	{
-		
-		int *aux, *B = alloc ( A -> size + 1 ),
-		*C = alloc( k + 1 ), i, n = A -> size;
-		for ( i = 0; i < n; i++ )	
-			C[ (A -> data)[i] ]++;
+		// Realiza percurso até encontrar local certo para alocar
+		if ( chave != raiz -> chave )
+		{
+			if ( chave > raiz -> chave )
+				{ raiz -> dir = inserir( raiz -> dir, chave );}
+			else
+				{ raiz -> esq = inserir ( raiz -> esq, chave ); }
+			atualizar_altura( &raiz );
+		}
+		return raiz;
+	}
+}
 
-		for ( i = 2; i <= k; i++ )	
-			C[ i ] += C[ i - 1 ];
+// Exibe dados de um nó
+// raiz : Nó cujos dados deseja-se exibir
+void imprimirNo( No *raiz )
+{
+	printf("[%d | h = %d ]\n", raiz -> chave, raiz -> altura );
+}
+
+// Imprime nós de árvore por nível
+// raiz : Ponteiro para raíz da árvore
+// nivel : Nível a ser impresso
+void imprimir ( No *raiz , int nivel )
+{
+     int cont;
+     // Se a árvore é não vazia
+     if( raiz )
+       {
+	     for ( cont = 0; cont < nivel; cont++ )
+	        printf("  ");
+
+	    // Imprime a raiz e depois as subárvores à direita e à esquerda
+	     imprimirNo( raiz );
+	     imprimir  ( raiz -> esq , nivel + 1 );
+	     imprimir  ( raiz -> dir , nivel + 1 ) ;
+	    }
+}
+
+// Busca e retorna, se existir, ponteiro para nó; Caso contário retorna NULL
+// raiz : Ponteiro para raiz da árvore na qual deseja-se realizar a busca
+// chave : Chave do nó a ser buscada
+No *buscar ( No *raiz, int chave )
+{
+	if ( ! raiz )
+	 	return NULL; 
+	if ( raiz -> chave != chave )
+	{
+		if ( chave > raiz -> chave )
+			{ return buscar( raiz -> dir, chave ); }
+		else
+			{ return buscar( raiz -> esq, chave ); }
+	}
+	
+	return raiz;
+}
+
+// Remove nó com chave de uma ABB
+// raiz : Ponteiro para árvore da qual deseja-se remover o nó
+// chave : Chave a ser removida
+No* remover( No* raiz, int chave )
+{
+	// Se a árvore é não vazia
+	if ( raiz )
+	{
+		// busca na subárvore à esquerda
+		if ( raiz -> chave > chave )
+		{ raiz -> esq = remover( raiz -> esq, chave ); } 
+		else if ( raiz -> chave == chave )
+		{
+			// Encontrou a chave
+
+			// Se for um nó folha
+			if ( raiz -> esq == NULL && raiz -> dir == NULL )
+			{	free( raiz ), raiz = NULL; 	}
+			else
+			{	
+				if ( raiz -> esq == NULL )
+				{ 
+				  No *aux = raiz;
+				  raiz = raiz -> dir, free( aux );
+				}
+				else
+				{
+
+					if ( raiz -> dir == NULL )
+					{
+						No *aux = raiz;
+						raiz = raiz -> esq, free( aux );
+					} else
+					{
+						// Tem os dois filhos
+						No *pt = raiz -> dir;
+						while ( pt -> esq != NULL )
+						{ 	pt = pt -> esq; }
+						
+						// Troca de conteúdo e remove nó folha correspondente
+						raiz -> chave = pt -> chave, pt -> chave = chave ;
+						raiz -> dir = remover( raiz -> dir, chave );
+					}
+				}
+			}
+		} else 
+		{ raiz -> dir = remover( raiz -> dir, chave ); }
+	}	
+	
+	return raiz;
+}
+
+// Atualiza a altura de todos os nós na árvore
+// raiz : Ponteiro para raiz da árvore
+void atualizar_altura ( No** raiz )
+{
+	if ( (*raiz) -> esq )
+		atualizar_altura( & ( (*raiz) -> esq ) );
+	(*raiz) -> altura = altura( *raiz );
+	if ( (*raiz) -> dir )
+		atualizar_altura( & ( (*raiz) -> dir ) );
+}
+
+// Calcula e retorna a altura de uma ABB
+// raiz: Ponteiro para raíz da árvore
+int altura ( No* raiz ) 
+{
+   if ( !raiz ) 
+      return 0; 
+   else 
+   {
+      // Calcula alturas das subárvores e retorna a maior
+      int hTe = altura ( raiz -> esq ), hTd = altura ( raiz -> dir );
+      return ( hTd > hTe ) ?  hTd + 1 :  hTe + 1;
+   }
+}
+
+// Versão alternativa
+// Calcula e retorna a altura de uma ABB
+// raiz: Ponteiro para raíz da árvore
+void altura_v3 ( No **raiz )
+{
+	if ( raiz )
+	 { 
+	 	if ( (*raiz) -> esq == NULL && (*raiz) -> dir == NULL )
+		 (*raiz) -> altura = 1;
+		else
+		{ 
+			if ( (*raiz) -> esq && (*raiz) -> dir )
+			{
+				altura_v3( & ( (*raiz) -> esq ));
+				altura_v3( & ( (*raiz) -> dir ));
+				int hTd = (*raiz) -> esq -> altura, hTe = (*raiz) -> dir -> altura;
+				(*raiz) -> altura  = ( hTd > hTe ) ? hTd + 1 : hTe + 1;
+			} else
+		 	{
+		 		if ( (*raiz) -> esq )
+		 		{ 
+		 			altura_v3( & ( (*raiz) -> esq ));
+		 			(*raiz) -> altura = (*raiz) -> esq -> altura + 1;
+		 		} else 
+		 			{
+		 				altura_v3( & ( (*raiz) -> dir ));
+		 				(*raiz) -> altura = (*raiz) -> dir -> altura + 1;
+		 			}
 			
-		for ( i = n - 1; i >= 0 ; i-- )	
-			B[ C[ (A -> data)[i] ] ] = C[ (A -> data)[i] ]--;
-		
-		aux = A -> data, A -> data = B;
-		free ( aux ), free ( C );
+		 	}
+		}
+	} 
+}
+
+// Determina altura de CADA nó da árvore
+// pt : Ponteiro para raiz da árvore
+void altura_v2 ( No** pt )
+{
+	if ( *pt )
+	{
+		// Calcula altura das subárvores
+		altura_v2( &( (*pt) -> esq ) );
+		altura_v2( &( (*pt) -> dir ) );
+
+		// Se ambas as subárvores são não vazias
+		if ( (*pt) -> esq && (*pt) -> dir )
+			(*pt) -> altura = ( (*pt) -> esq -> altura > (*pt) -> dir -> altura ) ? (*pt) -> esq -> altura + 1: (*pt) -> dir -> altura + 1;
+		else
+		{
+			if ( (*pt) -> esq || (*pt) -> dir )
+				(*pt) -> altura = ( (*pt) -> esq != NULL ) ? (*pt) -> esq -> altura + 1: (*pt) -> dir -> altura + 1;
+		}
 	}
-	return A;
 }
 
-// Preenche o vetor com elementos inteiros
-// myVector : Vetor a ser ordenado
-void createSequence( Vector** myVector )
-{
-	int i;
-	for ( i = 0; i < (*myVector) -> size; i++ )
-		((*myVector) -> data )[i] = (100 + rand() ) % 999 ;
-}
-
-// Ordena os elmentos de um vetor lexicograficamente
-// A : Vetor a ser ordenado
-// qtdDigit : Quantidade de dígitos dos números
-void radixSort ( Vector** A, int qtdDigit )
-{
-	int w;
-	for ( w = 1; w <= qtdDigit; w++ )
-		countingSortAdapted( A,9, w, qtdDigit );
-}
-
-// Exibe os elementos do vetor 
-// myVector : Vetor a ser exibido
-void show_vector( Vector* myVector )
+// Gera árvore binária de busca com quantidade de nós definida e valores pseudo-aleatórios
+// myTree : Ponteiro para árvore 
+// quantidade : quandidade de nós a serem criados
+void gerarABB(  No** myTree, int quantidade )
 {
 	int cont;
-	printf("[");
-	for ( cont = 0; cont <= myVector -> size; cont++ )
-		printf("%d |", (myVector -> data)[cont]  );
-	printf("]\n");
-}
-
-// Retorna o k-ésimo digito do número
-// value : Número
-// qtdDigit : Quantidade de dígitos do número
-// digit : Posição do dígito a ser extraído
-int digit( int value, int qtdDigit, int digit )
-{
-	int rest = value, dig = 0;
-	while ( qtdDigit >= digit )
-	{
-		int pot = pow( 10, qtdDigit-1) ;
-		if ( rest >= pot )
-			dig = rest / pot, rest %= pot;
-		else
-			dig = 0;
-		qtdDigit--;
-	}
-	return dig;
-}
-
-// Ordena o vetor de inteiros - CountingSort adaptado
-// A : Vetor de inteiros a ser ordenado
-// k : Maior valor do conjunto
-// col : Coluna
-// qtdDigit : Quantidade de dígitos das palavras
-void countingSortAdapted ( Vector** A, int k, int col, int qtdDigit )
-{
-	if ( *A )
-	{
-		int n = (*A) -> size, *aux, *B = alloc ( n + 1 ), *C = alloc( k + 1 ), i;
-		for ( i = 0; i < n; i++ )	
-			C[ digit( ((*A) -> data)[i], qtdDigit, col ) ]++;
-
-		for ( i = 1; i <= k; i++ )	
-			C[ i ] += C[ i - 1 ];
-			
-		for ( i = n - 1; i >= 0 ; i-- )	
-		{
-			B[ C[ digit( ((*A) -> data)[i], qtdDigit, col ) ] -1 ] = ( (*A) -> data)[i];
-			C[ digit( ((*A) -> data)[i], qtdDigit, col )   ]--;
-		}
-		
-		aux = (*A) -> data, (*A) -> data = B;
-		free ( aux ), free ( C );
-	}
+	for ( cont = 0; cont < quantidade; cont++ )
+	  *myTree = inserir( *myTree, (int)rand() % 100 ); 
 }
 
