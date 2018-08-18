@@ -147,9 +147,9 @@ int digit( int value, int qtdDigit, int digit )
 
 // Ordena o vetor de inteiros - CountingSort adaptado
 // A : Vetor de inteiros a ser ordenado
-// k : 
-// col :
-// qtdDigit : 
+// k : Maior valor do conjunto
+// col : Coluna
+// qtdDigit : Quantidade de dígitos das palavras
 void countingSortAdapted ( Vector** A, int k, int col, int qtdDigit )
 {
 	if ( *A )
