@@ -80,6 +80,7 @@ void insertionSort( int *V, int tam )
 	for ( j = 1; j < tam; j++ )
 	{
 		chave = V[j];
+		// Desloca os elementos de V maiores do que a chave e a insere na posição correta
 		for ( i = j - 1; i >= 0 && V[i] > chave ; i-- )
 			trocar( V, i, i+1 );
 		V[i+1] = chave;
