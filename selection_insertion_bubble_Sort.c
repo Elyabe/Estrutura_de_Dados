@@ -82,6 +82,7 @@ void insertionSort( int *V, int tam )
 		chave = V[j];
 		for ( i = j - 1; i >= 0 && V[i] > chave ; i-- )
 			trocar( V, i, i+1 );
+		V[i+1] = chave;
 	}
 
 }
