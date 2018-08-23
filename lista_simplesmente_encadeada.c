@@ -32,7 +32,7 @@ No* novo_no( int chave );
 No* divide( No* L, int n );
 No* concatena( No* L1, No* L2 );
 No* removeNElementos( No *L, int n );
-No* intercala( No *L1, No* L2 );
+No* intercalar_listas( No *L1, No* L2 );
 No* criar_lista( int vetor[], int n);
 No* deletar_lista( No *L );
 
@@ -72,7 +72,7 @@ int main()
 		Novo = divide(Lista,4);
 		imprimeLista(Lista);
 		imprimeLista(Novo);
-		Lista = intercala(Lista, Novo);
+		Lista = intercalar_listas(Lista, Novo);
 		imprimeLista(Lista);
 
 		int vet[] = {1,2,3,4,5,6};
@@ -247,7 +247,7 @@ No* removeNElementos( No *L, int n )
 
 // Cria e retorna uma nova lista resultado da intercalação de duas listas
 // L1, L2 : Ponteiros para listas a serem intercaladas
-No* intercala( No *L1, No* L2 ) //enxugar codigo
+No* intercalar_listas( No *L1, No* L2 ) //enxugar codigo
 {
 	No *aux1 = L1, *aux2 = L2, *temp, *temp2;
 	
