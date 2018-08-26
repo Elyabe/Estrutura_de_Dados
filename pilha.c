@@ -107,7 +107,7 @@ Pilha* push( Pilha *pilha, int valor )
 }
 
 // Desempilha e retorna o elemento do topo
-// pilha : Ponteiro para pilha
+// pilha : Endereço de ponteiro para pilha
 No* pop( Pilha **pilha )
 {
 	No* result = NULL;
@@ -123,6 +123,8 @@ No* pop( Pilha **pilha )
 	return result;
 }
 
+// Imprime os elementos da pilha na tela
+// pilha : Ponteiro para pilha
 void imprimir_pilha( Pilha *pilha )
 {
 	No *aux = pilha -> topo;
@@ -135,6 +137,8 @@ void imprimir_pilha( Pilha *pilha )
 	}
 }
 
+// Libera área de memória ocupada pelo TAD
+// pilha : Endereço de ponteiro para pilha
 Pilha* desalocar( Pilha **pilha )
 {
 	No *x = NULL;
