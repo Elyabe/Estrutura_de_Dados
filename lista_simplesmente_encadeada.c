@@ -22,19 +22,20 @@ typedef struct no
 	struct no *prox;
 } No;
 
-void imprimir_lista( No *L );
-No* excluir_elementos( No* L, int chave );
-No* buscar( No* L, int chave );
+void imprimeLista( No *L );
+No* excluiElemento( No* L, int chave );
+No* busca( No* L, int chave );
 No *inserir_ordenado( No* L, No* Novo );
 No* inserir_fim( No* L, No* Novo );
 No* inserir_inicio( No* L, No* Novo );
 No* novo_no( int chave );
-No* dividir_lista( No* L, int n );
-No* concatenar( No* L1, No* L2 );
-No* remover_n_elementos( No *L, int n );
-No* intercalar_listas( No *L1, No* L2 );
+No* divide( No* L, int n );
+No* concatena( No* L1, No* L2 );
+No* removeNElementos( No *L, int n );
+No* intercala( No *L1, No* L2 );
 No* criar_lista( int vetor[], int n);
 No* deletar_lista( No *L );
+No* inverter_lista( No* ant, No* L );
 
 int main()
 {
@@ -43,42 +44,46 @@ int main()
 	if ( Lista )
 	{
 		Lista = inserir_ordenado( Lista, novo_no( 16 ) );
-		imprimir_lista( Lista );
+		imprimeLista( Lista );
 		Lista = inserir_ordenado( Lista, novo_no( -3 ) );
-		imprimir_lista( Lista );
+		imprimeLista( Lista );
 		Lista = inserir_inicio( Lista, novo_no( 0 ) );
-		imprimir_lista( Lista );
+		imprimeLista( Lista );
 		Lista = inserir_fim(Lista,novo_no( 7 ));
-		imprimir_lista( Lista );
+		imprimeLista( Lista );
 		
 		//Questão 1
 		printf("Q1\n");
-		Novo = dividir_lista(Lista, 4);
-		imprimir_lista(Lista);
-		imprimir_lista(Novo);
+		Novo = divide(Lista, 4);
+		imprimeLista(Lista);
+		imprimeLista(Novo);
 
 		//Questão 02
 		printf("Q2\n");
-		Lista = concatenar(Lista, Novo);
-		imprimir_lista(Lista);
+		Lista = concatena(Lista, Novo);
+		imprimeLista(Lista);
 
 		// Questão 03
 		printf("Q3\n");
-		//Lista = remover_n_elementos(Lista,2);
-		//imprimir_lista(Lista);
+		//Lista = removeNElementos(Lista,2);
+		//imprimeLista(Lista);
 
 		// Questão 04
 		printf("Q4\n");
-		Novo = dividir_lista(Lista,4);
-		imprimir_lista(Lista);
-		imprimir_lista(Novo);
-		Lista = intercalar_listas(Lista, Novo);
-		imprimir_lista(Lista);
+		Novo = divide(Lista,4);
+		imprimeLista(Lista);
+		imprimeLista(Novo);
+		Lista = intercala(Lista, Novo);
+		imprimeLista(Lista);
 
 		int vet[] = {1,2,3,4,5,6};
 		No *l2 = criar_lista(vet,6);
-		imprimir_lista(l2);
+		imprimeLista(l2);
 
+		// Teste inverter lista
+		l2 = inverter_lista( NULL, l2 );
+		imprimeLista(l2);
+		
 		// Libera memória
 		Lista = deletar_lista( Lista );
 		l2 = deletar_lista( l2 );
@@ -155,7 +160,7 @@ No *inserir_ordenado( No* L, No* novo )
 // Busca e retorna ponteiro para elemento buscado
 // L : Ponteiro para lista 
 // chave : Valor chave a ser buscado
-No* buscar( No* L, int chave )
+No* busca( No* L, int chave )
 {
 	No *aux = L;
 	while ( aux != NULL && aux -> chave != chave )
@@ -166,7 +171,7 @@ No* buscar( No* L, int chave )
 // Remove elemento e retorna lista modificada 
 // L : Ponteiro para lista 
 // chave : Valor chave a ser removido (1a ocorrência)
-No* excluir_elementos( No* L, int chave )
+No* excluiElemento( No* L, int chave )
 {
 	No *aux = L, *ant = NULL;
 
@@ -186,7 +191,7 @@ No* excluir_elementos( No* L, int chave )
 
 // Exibe lista na tela 
 // L : Ponteiro para lista 
-void imprimir_lista( No *L )
+void imprimeLista( No *L )
 {
 	No *aux = L;
 
@@ -202,7 +207,7 @@ void imprimir_lista( No *L )
 // Divide uma lista em duas a partir da primeira ocorrência de um valor 
 // L : Ponteiro para lista original
 // n : Valor chave a partir do qual a lista será dividida
-No* dividir_lista( No* L, int n )
+No* divide( No* L, int n )
 {
 	No *aux = L, *novaL = NULL;
 
@@ -219,7 +224,7 @@ No* dividir_lista( No* L, int n )
 
 // Concatena e retorna duas listas 
 // L1, L2 : Ponteiros para listas a serem encadeadas
-No* concatenar( No* L1, No* L2 )
+No* concatena( No* L1, No* L2 )
 {
 	if ( !L1 ) return L2;
 	if ( !L2 ) return L1;
@@ -233,7 +238,7 @@ No* concatenar( No* L1, No* L2 )
 // Remove e retorna os n primeiros elementos da lista
 // L : Ponteiro para lista
 // n : Quantidade de elementos a serem removidas
-No* remover_n_elementos( No *L, int n )
+No* removeNElementos( No *L, int n )
 {
 	No *aux = L;
 	while ( aux && n > 0 )
@@ -247,7 +252,7 @@ No* remover_n_elementos( No *L, int n )
 
 // Cria e retorna uma nova lista resultado da intercalação de duas listas
 // L1, L2 : Ponteiros para listas a serem intercaladas
-No* intercalar_listas( No *L1, No* L2 ) //enxugar codigo
+No* intercala( No *L1, No* L2 ) //enxugar codigo
 {
 	No *aux1 = L1, *aux2 = L2, *temp, *temp2;
 	
@@ -301,4 +306,21 @@ No* deletar_lista( No *L )
 	return L;
 }
 
+// Inverte o encadeamento de uma lista simplesmente encadeada
+// ant : Ponteiro para o elemento imeadiatamente anterior a L (NULL no início)
+// Ĺ : Ponteiro para a lista a ser invertida
+No* inverter_lista( No* ant, No* L )
+{
+	No *L_inv = NULL; 
+	if ( L != NULL )
+	{
+		if ( L -> prox != NULL )
+		{
+			L_inv = inverter_lista( L, L-> prox );
+		} else 
+			{ L_inv = L; }
+		L -> prox = ant;
+	}
 
+	return L_inv;
+}
