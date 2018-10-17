@@ -44,12 +44,12 @@ int main()
 	minha_pilha = push( minha_pilha, 5 );
 	minha_pilha = push( minha_pilha, 15 );
 
-	imprimir_pilha( minha_pilha );
+	// imprimir_pilha( minha_pilha );
 
 	No *x = pop( &minha_pilha );
 	printf("\n %d  desempilhado \n", x -> valor );
 
-	imprimir_pilha( minha_pilha );
+	// imprimir_pilha( minha_pilha );
 
 	desalocar( &minha_pilha );
 
@@ -127,14 +127,7 @@ No* pop( Pilha **pilha )
 // pilha : Ponteiro para pilha
 void imprimir_pilha( Pilha *pilha )
 {
-	No *aux = pilha -> topo;
-
-	printf("\n");
-	while ( aux )
-	{
-		printf("[\t %d \t ]\n", aux -> valor );
-		aux = aux -> prox;
-	}
+	// A ser implementado
 }
 
 // Libera área de memória ocupada pelo TAD
